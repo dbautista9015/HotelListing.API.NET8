@@ -1,3 +1,4 @@
+using HotelListing.API.Configurations;
 using HotelListing.API.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ conStrBuilder.Password = builder.Configuration["DbPassword"];
 conStrBuilder.UserID = builder.Configuration["DbUserID"];
 var connectionString = conStrBuilder.ConnectionString;
 
+// Add services to the container
 builder.Services.AddDbContext<HotelListingDbContext>(options =>
 {
     options.UseSqlServer(connectionString);
@@ -29,6 +31,8 @@ builder.Services.AddCors(option =>
 
 builder.Host.UseSerilog((ctx, lc) =>
         lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
+
+builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 var app = builder.Build();
 
