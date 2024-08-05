@@ -26,23 +26,29 @@ namespace HotelListing.API.Controllers
 
         // GET: api/Countries
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Country>>> GetCountries()
+        public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
-            return await _context.Countries.ToListAsync();
+            var countries = await _context.Countries.ToListAsync();
+            var records = _mapper.Map<List<GetCountryDto>>(countries);
+            
+            return Ok(records);
         }
 
         // GET: api/Countries/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Country>> GetCountry(int id)
+        public async Task<ActionResult<CountryDto>> GetCountry(int id)
         {
-            var country = await _context.Countries.FindAsync(id);
+            var country = await _context.Countries.Include(q => q.Hotels)
+                .FirstOrDefaultAsync(q => q.Id == id);
 
             if (country == null)
             {
                 return NotFound();
             }
 
-            return country;
+            var countryDto = _mapper.Map<CountryDto>(country);
+
+            return countryDto;
         }
 
         // PUT: api/Countries/5
